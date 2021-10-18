@@ -1,0 +1,116 @@
+Ejercicio 1
+
+Se que tengo n articulos y m volumenes
+Cada articulo tiene su valor y su precio
+Igual con el volumen
+
+Asumo que en mi input tengo vectores. Por otro lado, mi vector de volumenes esta ordenado ascendentemente
+Y tambien tengo los precios de mis volumenes. Como la el arreglo de volumenes tiene tamaño igual a mi arreglo de articulos, donde
+cada posicion representa el volumen a que pertence ordenado, entonces, sea j una posicion en el volumen, se que v[j] es el volumen en la posicion j-esima
+Ej: [1,1,2,3,3] si tomo v[3] entonces el volumen es 2
+Luego, como el arreglo de precios de volumen en longitud es menor a la del arreglo de numeracion de volumenes, en la posicion del valor que me da v[j] tengo el precio del volumen
+Ej: [7,4,4]. Como v[3] = 2 en c[2] = 4 que es el precio del 2do volumen
+Lo mismo si v[1] = 1 luego c[v[1]] = c[1] = 7
+Si v[2] = 1 lo mismo
+Y asi consecutivamente, puedo usar esto para mi codigo
+
+Ahora. B(i, q) me devuelve el maximo valor que puede obtener la biblioteca cuando su presupuesto es q si compra unicamente articulos menores o iguales a i
+y volumenes que no tienen articulos mayores a i
+
+Lo que puedo hacer es disminuir q cuando agrego un articulo o un volumen
+(Se lo dejo al codigo la demas validación)
+
+Sea a mi arreglo de valores de articulos
+Sea ca mi arreglo de coste de articulos
+Sea va mi arreglo de valores de articulos
+Sea v mi arreglo de volumenes
+Sea vc mi arreglo coste de los volumenes
+
+Caso base:
+si q <= 0 devuelvo 0, porque no hay nada que agregar (Se que q es natural pero por ahi me paso del limite inferior entonces no tiene sentido seguir agregando)
+si i = n+1 entonces retorno 0 porque estoy buscando en una arreglo que ya termino
+si i = n entonces me fijo de devolver la maxima cantidad posible en valor de, agregar el articulo en posicion n, o el volumen que requiere en posicion n
+esto es max{B(n, q - ca[n]), B(n, q - cv[v[n]]} solo si q > 0
+
+Caso recursivo
+si i != n y q > 0
+	Aca tengo lo siguiente. Como todavia estoy recorriendo los articulos, entonces necesito una sola cuestión
+	Necesito el maximo entre comprar con mi presupuesto q' (q si i = 1, si no es el restante de restarle los articulos | volumenes agregados) el articulo en posicion i, o el volumen en posicion i
+	Si compro el volumen, entonces todos esos articulos se me agregaron. Pero como B(i, q) se encarga de esto, de medir esta funcion, entonces no tengo problema
+	
+	max(a[i], cv[v[i]]) + max(max(B(i+1, q - min(a[i], cv[v[i]])), max(B(i+1, q))))
+	
+	Puedo re pensarlo porque siento que algo me estoy comiendo
+	
+b)
+Superposicion de problemas:
+Se que tengo un presupuesto de q y tengo n articulos distribuidos en a lo sumo m volumenes
+Si armo un arbol de decisiones, por ese presupuesto q puedo agregar o 1 articulo, o no agregarlo y a su vez, agregar un volumen o no agregarlo, mejor dicho, puedo agregar un articulo, puedo agregar el volumen, no agrego ninguno
+Si agrego el volumen salto todos los articulos que tengo, pero supongamos no lo agrego, en la siguiente iteracion tengo la misma decision
+En si, por cada articulo tengo 4 decisiones posibles, agrego el articulo, no lo agrego. Tambien puedo agregar el volumen, pero agregando el volumen tengo el articulo
+Es decir, articulo C volumen. Por lo cual, para mayores decisiones puedo optar por agregar o no el arti
+Luego, tengo 3^(min(q-a[i], q-cv[v[i]])) * (n-i)
+
+Suponiendo todos 1. Tengo 3^q*n posibles decisiones en el arbol
+
+q es suficientemente chico cuando agregué suficientes articulos. Es decir, q inicia con un valor arbitrario mayor o igual a 1
+En peor caso, q puede tener a +infinito. Luego, para todos los posibles q, este valor se hará mas chico conforme yo vaya agregando mas articulos | volumenes
+Es decir, en cada iteración del algoritmo puedo o: mantener a q, para despues ver si le agrego o no un volumen | articulo, o, restarle a q el valor del volumen | articulo que deseo agregar
+q se hace suficientemente chico cuando agregué bastantes volumenes | articulos posibles a mi selección, es decir, "compre" varios volumenes/articulos, por lo tanto a q se le va restando el precio de cada item
+Luego, q se acercará a 0 o a 1. Cuando q sea 0, entonces tengo 3^(0*n) = 4^0 = 1 donde la unica opcion que tengo es no agrego nada
+Tambien si q = 1 tengo 3 opciones. Entonces, q será suficientemente chico mientras mas items vaya comprando
+Luego, tengo 3^(expresion) donde el tiempo es exponencial
+
+Por otro lado, yo se que voy a estar recorriendo la secuencia con un i entre 1 y n. Entonces tengo
+(n - i) instancias posibles
+Por cada instancia, tengo un valor q > 0, donde puedo denotar a q - exp siendo exp 0 si no agrego nada o algun valor entre 1 y +infinito que representa el coste del 
+Puedo tambien ver que i siempre será ascendente, es decir, no voy a volver para atras en ningun momento, y q siempre va a disminuir, no va a incremenar
+Por ende, tengo (n-i)*(q - exp)
+En especial, cuando exp es 0 e i = 1 tengo n*q instancias. Finalmente, cumple la propiedad de superposicion de problemas
+
+c)
+Para este algoritmo, puedo hacer varias cosas:
+
+Una idea que puedo utilizar es un preprocesamiento de los datos. Es decir, escencialmente, puedo tomar el arreglo de valores de articulos y hacer la siguiente idea:
+Armo dos arreglos de posicion m donde, en cada posicion guardo una tupla
+En la tripla tengo como primera componente el precio de la suma de todos los articulos correspondientes a ese volumen
+En la segunda componente todos los precios por separado de mis articulos de esa componente
+En el ejemplo del parcial tengo
+(4,5,3,2,4) como mis articulos
+(1,1,2,3,3) como mis volumenes
+(7,4,4) como los precios de mis volumenes
+Entonces, tendria la siguiente estructura:
+((9, [4,5]), (3, [3]), (6, [2,4])
+Entonces, aca tengo lo siguiente
+Luego, otro vector donde tenga los volumenes sin repetir
+(1,2,3)
+De esta forma el problema lo puedo reducir a recorrer m posibles valores en caso promedio. En peor caso m = n, entonces hacer esto es O(n)
+La primera idea consta en ir moviendo un i desde 1 hasta n y sumando los valores de los articulos hasta que en el volumen cambie de numero, entonces ahi se que termina mi volumen, luego guardo el valor
+Para el segundo vector de volumenes no repetidos consiste en recorrer mis volumenes (valga la redundancia) y entonces voy comparando el valor actual con el anterior, si cambia, es porque ya cambie de volumen
+Otra idea es hacer una "copia" del vector de precios del volumen, y en cada posicion ir guardando un numero desde 1 hasta m ascendentemente
+
+(Vale tambien la idea del caso donde, si mis articulos valen una cosa y cuestan otra cosa, puedo realizar la misma idea)
+Entonces en memoria tendre 3 arreglos de a lo sumo n posiciones
+O(3*n) = O(n) consumo de memoria
+Luego el procesamiento es O(n) a lo sumo, entonces no tengo inconvenientes, me mantengo dentro de la complejidad pedida
+
+Finalmente, el algoritmo recorre ambas secuencias, en cada caso valida, si comprar el volumen o los precios por separado vale mas la pena. Si me sale mas barato comprar por separado mis articulos para conseguir una mayor ganancia o comprar el volumen
+En ambos casos, si me conviene comprar por separado, simplemente accedo a la componente y recorro los precios de los articulos
+
+Esto me tomaria en retrospectiva, O(n) pues:
+Sea j entre 1 y m, cuando estoy en q[j] recorrer los valores me tomaria, ponele, j+3, luego si hago esto constatemente, estoy recorriendo todos los valores de n, por ende, tengo O(n) en recorrer estas secuencias pre procesadas
+Esto tambien es valido pues se que m es mas chico que n, entonces a lo sumo, voy a estar recorriendo n posiciones y dentro de la tupla habrá un unico valor que se obtendrá en O(1)
+El valor en la tupla tambien se obtiene en O(1) ya que accedo a su valor, finalmente la compracion es en O(1) porque es comparar enteros
+
+En cada caso recursivo igualmente estoy haciendo esto para el posible valor de q
+Igualmente, para todo esto puedo estar haciendo muchos llamados recursivos. Me planteo otra estructura mas, una estructura de memoización
+Esta estructura sera un vector de q posiciones. Como i es ascendente, no tengo problema en volver atras y no dejo valores armados a media, entonces tranquilamente puedo considerar el optar por esta estructura
+Luego tengo un vector de O(q) espacio en memoria
+
+d)
+Pseudocodigo:
+
+// PreProcesamiento
+sumaParcial <- 0
+para i entre 1 y n
+	

@@ -256,3 +256,20 @@ Ok, el costo de cortar la madera de longitud l es l
 
 Entonces tengo
 (j - i) + ((j-c1+1) + (j-c1-c2+1) + ... + (j-c1-c2-...-cn+1))
+
+### Ejercicio 9
+Necesito un arreglo de soluciones, donde esté una tupla que sea (camino : vida)
+Entonces yo escojo la minima vida al final del recorrido
+
+Caso base:
+    Si la vida en esa posicion es menor a 0. Entonces se que ahi no puedo ir. Porque si me voy a 
+    quedar siempre en 1 entonces no tiene sentido estar haciendo este problema
+
+    Entonces, si la vida es menor a 1. devuelvo 0, entonces no se recorre ese camino
+    Si la vida no es 1. Entonces reviso. i y j estan en borde? Entonces solo puedo ir hacia el contrario
+    Si i esta en borde solo puedo moverme en j. Si j está en borde, solo puedo moverme en i
+    Si estoy en (m-1, n-1) entonces gane
+
+Caso recursivo:
+    Me muevo abajo y a la izquierda, por cada uno yo tomo el valor maximo posible caminando
+

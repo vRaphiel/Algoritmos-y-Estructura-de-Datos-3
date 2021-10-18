@@ -1,0 +1,72 @@
+Enunciado:
+Los numeros feos son numeros cuyos factores primos son 2, 3 o 5
+La secuencia 1,2,3,4,5,6,8,9,10,12,15 muestra los 11 primeros numeros feos. Por convencion, el 1 está incluido
+Dado un numero n, encontrar el n-esimo numero feo
+Ej.
+n = 7 => 8
+n = 10 => 12
+n = 15 => 24
+n = 150 => 5832
+
+Idea:
+Entonces. Sea n, necesito el n-esimo numero feo posible
+Para eso, tengo que hayar hasta n-1 numeros feos, entonces el siguiente es numero feo
+Por lo tanto, tengo que hayar los n-1 numeros tales que sean divisibles por 1, 2, 5
+
+Como se que los numeros feos son producidos por productos de 2, 3 y 5, entonces puedo considerar la siguiente lista:
+
+1x2 2x2 3x2 4x2 5X2 ...
+1x3 2x3 3x3 4x3 5x3 ...
+1x5 2x5 3x5 4x5 5x5 ...
+
+Entonces el n-esimo numero está contenido en estas 3 secuencias, en alguna de las tres. Hay que notar que en algunos casos, ocurre la propiedad
+conmutativa. El orden de los factores no altera el producto
+Esto me sirve para luego verificar la propiedad de superposicion de problemas
+
+Para la funcion de recursividad, sea i un numero entre 0 y n, necesito el minimo entre
+min(i*2, j*3, k*5) con i >= j >= k
+Esto se debe a que como 2 es par, pasa siempre de 1 a 1 entonces alterna entre par e impar en cada ciclo
+2 < 3 y puede ocurrir: 6 = 6 => 2*3 + 3*2 o por ejemplo 18 => 9*2 = 3*6 Entonces, necesitaremos un i mas grande para el cual se cumpla esto
+Luego, la misma idea aplica para 5
+Si tomamos 10 => 5*2 = 2*5, donde necesitamos un i = 5 y un k = 2. Que representan el mismo resultado, pero necesitamos que i siempre sea mayor o igual
+a j y k
+Luego, sea f mi funcion recursiva que dado i, j, k buscamos siempre el minimo entre los posibles valoreS:
+
+f(n, i, j, k) =
+    1 si n = 1
+    cn si i,j,k = n
+    f(n, i+1, j, k) si ci % 2 = 0
+    f(n, i, j+1, k) si cj % 3 = 0
+    f(n, i, j, k+1) si ck % 5 = 0
+
+Como i, j y k siempre ascienden y esto para cuando alguno de los 3 items, i j o k son iguales a n. En ese casi simplemente paramos y devolvemos el resultado
+
+Superposicion de problemas:
+Como podemos ver. Queremos el n-esimo numero feo, entonces tendremos que evaluar cada numero hasta un cierto m tal que m >= n basados en ciertas condiciones
+Sabemos que el numero es divisible por 2, 3 o 5
+Entonces si pensamos en el arbol recursivo, tenemos desde la base 1, que siempre es un numero feo, luego, por cada numero posible, tenemos que estar cuestionando si es
+divisible por alguno de los 3. Entonces tenemos 3*n operaciones que es O(n)
+Esto porque checkeamos todos los numeros posibles
+Por otro lado, si solo checkeamos con la funcion recursiva solo los numeros que son feos, reducimos en mayor cantidad de ciclos el tiempo del problema
+De todas formas vamos a tener que recorrer a lo sumo n resultados posibles, no obstante en la practica, esto reduce mucho
+
+Tiempo O(n). Vale la pena memoizar? Para esta practica si
+
+Algoritmo:
+    Precomputamos arreglos de n numeros cada uno, estos seran los numeros feos posibles
+    Entonces:
+
+    Declaramos el arreglo de numeros feos: feos[n]
+    Inicializamos el primer numero feo: feos[0] = 1
+    Inicializamos tres arreglos de variables i2, i3 e i5 y creamos punteros a ellos
+        Luego para cada uno de estos su primera posicion tiene valor 0
+    Luego, vamos moviendo los punteros de la forma que corresponda. Entonces tenemos ahora que ir actualizando el siguiente numero multiplo
+    Para esto hacemos que el siguiente multiplo de 2, de 3 y de 5 sean variables distintas y en cada uno hacemos:
+        sig_multiplo_2 = feo[i2]*2;
+        ...
+    Luego, iteramos sobre todos los numeros de 1 a n (siendo n el n-esimo numero feo)
+        Luego sig_n_feo es min(sig_multiplo_2, sig_multiplo_3, sig_multiplo_5)
+        En feos[i] guardamos el sig_n_feo
+        Y luego vemos, si sig_n_feo es multiplo de 2, 3 o 5 e incrementamos en 1 el contador para cada uno de estos
+        Finalmente devolvemos el resultado en la posicion n
+        

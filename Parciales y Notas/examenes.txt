@@ -1,0 +1,435 @@
+===================================================================================================================================================================================================
+Recuperatorio del 12 de Julio de 2019
+
+Ejercicio 2)
+Tomo un elemento, me fijo si es prefijo de s
+Si es prefijo, entonces abro una lista y lo guardo ahi. Si no es prefijo, sigo
+Hago esto con todos los prefijos. Luego. Uno los prefijos que tengo, los convierto en una palabra
+Ahora tomo otro elemento. Se lo agrego a esta palabra. Es prefijo? Si lo es, entonces sigo con otros
+Hago esto hasta completar la palabra. Si es prefijo, entonces tengo 1 combinacion
+Vuelvo y hago lo mismo con el resto. Cuando complete una palabra entonces sumo 1
+Si no, sumo 0
+Tengo que ir recorriendo la palabra entera. Esto se hace en O(p). Luego, por cada prefijo nuevo. Recorro la lista
+Esto es O(n*p) Finalmente, como voy contando en cada uno, tengo los elementos correspondientes
+Enunciado:
+sea s una cadena de caracteres de longitud n
+Sea d una lista de p cadenas de caracteres distintas entre si, longitud no nula y O(1)
+
+Determinar la cantidad de maneras distintas de partir s en subcadenas que están en d
+Ayuda: Resolver para cada prefijo de s
+
+Asumo 2 indices. Un indice i y un indice k
+El indice i se moverá entre 0 y |d|, llamemoslo m, que será la cantidad de subpalabras
+El indice k se moverá entre 0 y la longitud de |s| o sea n. Y este mismo, es la longitud de la palabra
+La idea es ir moviendo el i respecto del k
+Tanto i y k iniciaran en 0. y k=0 es la primera letra de la palabra de la cual empiezo a contar
+Entonces, si encuentro algún i tal que d[i] es prefijo de s. Entonces al ser prefijo, puedo tomar ese primer lugar, e ir
+buscando denuevo por la secuencia otra palabra tal que unir ese prefijo con el anterior encontrado me formen uno
+No obstante, puedo recorrer todo i y no encontrar ningun otro prefijo. O moverme y nunca cambiar de sitio en p. entonces yo ire
+variando tanto el i como el k a fin de obtener la sub-secuencia que deseo
+
+Casos:
+	=> Si i = m y k = n entonces he recorrido toda la secuencia de palabras, todo d. Entonces tengo 1 prefijo o una subsecuencia que lograr
+	=> Si k = n e i no es m, se entonces que no hay un elemento de d para el cual el prefijo que actualmente tengo es sub secuencia
+	=> Si k no es n y i es m. Entonces puedo aumento k hasta ver si llego al elemento de i donde pueda usarlo de prefijo
+	=> Si no, entonces, aumento i sin variar el k, o aumento el k sin variar el i. Esto con una suma, para saber la maxima subsecuencia posible en estos dos casos
+		Tambien aca debo tener cuenta que esto puede ocurrir en que haya algun elemento quue no sea prefijo que se agregue, por lo tanto debo verificar aca que efectivamente,
+		si voy a aumentar el i, debo saber si el elemento d[i] es prefijo o no. Si lo es, lo considero y mi k aumenta efectivamente, si no lo es, k tambien aumenta, pero se que por ahi no habrá
+		ningun camino posible
+		
+		i es el indice en p. K es el indice de D
+		
+	f(i, k) =
+		1 si i >= n
+		0 si k >= |p|
+		f(i+|d[k]|, 0) + f(i, k+1) Si d[k] es prefijo de la palabra hasta S[i]
+		f(i, k+1)	Caso contrario
+		
+El algoritmo cumple la superposicion de problemas pues, por cada letra tenemos d elementos posibles. Esto hace d^n casos recursivos
+Tenemos un indice i que corre entre 0 y n. Esto es n-i el indice
+Luego tenemos k que va entre 0 y |p| y esto es p - k. Luego tenemos (n-i)(p-k) que esto es n*p en complejidad del algoritmo de programación dinamica
+
+Para esta estructura de memoización es eficaz en memoria utilizar un vector de dimension n, esto ocupa memoria O(n)
+El porque de esta estructura se basa en que yo voy a estar recorriendo el vector de dimension n una sola vez de manera ascendente mientras voy recorriendo la palabra
+Como nunca vuelvo hacia atras, entonces no tengo ninguna subsecuencia incompleta o a medio completar. Esto especialmente en la palabra, que siempre recorro hacia arriba y nunca hacia atras
+Entonces no dejo palabras a mitad. Por lo tanto, puedo ahorrarme el tener un espacio en memoria dependiendo tanto de los prefijos como de los distintos tamaños de la palabra
+
+V <- inicializo un vector de n dimensiones todos en bottom
+F(i, k) 
+	si i >= n retorno 1
+	si k >= |p| retorno 0
+	si k != 0
+		sub <- esPrefijo?(k, d[k])
+			si sub = true
+				V[i] = f(i+|d[k]|, 0) + f(i, k+1)
+			si no
+				V[i] = f(i, k+1)
+	si no
+		si V[i] = bottom
+			sub <- esPrefijo?(i, d[k])
+				si sub = true
+					V[i] = f(i+|d[k]|, 0) + f(i, k+1)
+				si no
+					V[i] = f(i, k+1)	
+	retornar V[i]
+	
+Todas las operaciones en el algoritmo se realizan en O(1)
+Los casos base son O(1)
+El caso recursivo:
+	La funcion esPrefijo? se realiza en a lo sumo O(p) pues lo que hace es ir, revisar en peor caso toda la palabra para ver si d[k] es prefijo de la palabra
+	Esto lo hace desde i, que es el indice en el cual está, hasta el tamaño de |d[k]| por lo tanto se realiza en O(p)
+	Luego, los pasos recursivos se hacen en O(1) a lo sumo O(n)
+	Cuando k == 0 esa comparacion se hace solo una vez. Luego si k != 0 es cuando entra en juego la funcion recursiva para los demas casos
+	Finalmente, en esto hago a lo sumo p comparaciones n veces. Eso me da la complejidad pedida de O(n*p)
+	
+Es correcto el algoritmo?
+El invariante me dice que tengo que tener sub canedas de S representadas con los elementos de P. En todo momento debo llevar la cuenta de cuantas subcadenas completas tengo
+-> Si todavia no recorrimos la secuencia, tenemos 0 sub cadenas
+-> Si no empezamos a recorrer la palabra tambien tenemos 0 sub cadenas con todos los elementos
+-> Si sobrepasamos la longitud de s tenemos 1 sub cadena posible pues recorrimos toda la palabra y eso signfiica que habian suficientes elementos en d para armar la sub secuencia
+-> Si sobrepasamos la longitud de n, significa que no hemos podido hayar una sub secuencia, por lo tanto tenemos 0 posibilidades
+-> En el ultimo caso, asumimos que empezamos a recorrer la secuencia y la palabra, entonces para cada elemento en d, nos fijamos si forma un prefijo de la palabra s. Si lo forma, entonces
+	seguimos buscando. Esto es, o hasta que hayamos terminado de recorrer la secuencia o hayamos recorrido toda la secuencia lo cual nos indica que hayamos una sub-secuencia posible de S
+-> Los parametros de la funcion son crecientes, por lo tanto, no repetimos casos en ningun momento
+
+Ejercicio 3)
+Torneo tri-color. Compiten 3 equipos. Azul | Amarillo | Rojo
+Las reglas son:
+-> No debe haber amigos dentro de azul
+-> No deben haber amigos dentro de amarillo
+-> Los miembros de rojo deben ser amigos de todos los que participan en el torneo
+-> Cada equipo tiene al menos un miembro
+
+Algoritmo eficiente en grafos. Dada la lista dentro de amigos dentro de uun grupo de personas, saber si es posible armar con ellas 3 equipos
+Input: 
+- p personas
+- r relaciones de amistad. Para cada amistad, las dos personas que son amigas (entre 1 y p)
+La relacion de amistad es simetrica
+Algoritmo en O(p+r)
+
+Podemos representar este problema con un grafo. No hace falta que sea dirigido, como todas las relaciones son simetricas, podemos representar una relacion de amistad de i a j como una sola recta
+que esa representa la ida y la vuelta
+
+Entonces, sean p los vertices y r las aristas. Tengo que buscar:
+- 2 componentes conexas tales que todos los vertices contenidos en estas componentes no tengan aristas que comparten entre si
+- 1 compoentne conexa tal que, todos los vertices tengan aristas con todos los demas vertices. Es decir, todos esten conectados con todos
+
+Para esto puedo hacer lo siguiente:
+Primero armo las componentes conexas, en estas componentes conexas primero valido que no hayan vertices entre si. Es decir, sea un grafo donde hayan todos sus vertices sean componentes conexas
+Podemos llamarlo un sub grafo
+Lo mismo con el segundo grafo, no tiene que haber aristas entre si
+El tercer grafo, serán todos los grafos que queden de esta situacion de al menos un vertice. No obstante, para este tercer grafo, tengo que validar que todos los vertices del subgrafo G1, como G2, tengan
+una arista con al cada uno de los vertices en G3 (Grupo Rojo). De esta forma, el algoritmo será correcto
+
+Hacer esto es como buscar 3 bosques. Para pensar esto, puedo ver lo siguiente
+Mi input es una lista de adyacencias, de tal forma que puedo cumplir la complejidad de O(p + r)
+Entonces, me armo un grafo G' que sea el complemento de G. De esta forma, puedo saber todos los grafos que tengan aristas entre si
+Aca puedo seleccionar como un grafo G1, todos los vertices que no tienen aristas entre si, de tal forma que se, que estos son los vertices que tienen aristas con todos
+Luego, de los vertices que me quedan. Armo dos bosques
+
+Hacer la inversa me toma O(p+r) porque es tomar los vertices que no existes
+Tomar los vertices que no tienen aristas es O(p) pues tengo que recorrer los vertices y validar que su grado sea 0
+Ahora, con los vertices restantes, me puedo armar dos bosques. Para esto tomo de los vertices algunos. Estos seran el G1, y los restantes, el G2
+Dicho esto. Tengo entonces los tres equipos que me piden
+
+El algoritmo cumple con lo pedido ya que
+1) Utilizo un grafo complemento, de forma que al tomar todos los vertices que no tengan aristas entre si, estoy tomando todos los jugadores que son amigos de todo el equipo. Asi tengo conseguido el equipo 3
+	Si no hay ningun vertice de grado 0 en el complemento, entonces no puedo armar los equipos, y devuelvo el equipo vacio
+2) Utilizo DFS para armar los bosques y poder obtener los dos equipos restantes, como es un grafo complemento, se que aca todos los vertices estan relacionados con todos. De tal forma que en el grafo
+	original, el no complementado, estos vertices no tienen aristas entre si.
+	Como DFS me devuelve un arbol. Lo que hago es dividir ese arbol a la mitad
+	Si alguno de estos dos equipos me resulta un arbol vacio. Entonces la raiz ira a parar a ese arbol vacio, de forma que tenga por lo menos un elemento, caso contrario, ira a parar a cualquiera indistintamente
+	DFS corre en O(p+r)
+	Finalmente la complejidad final es O(p+r) como se pedia
+	
+===================================================================================================================================================================================================
+Parcial del 22 de mayo de 2019
+Sea G un grafo de n vertices y m ejes. Diseñar un algoritmo que decida si G = G1 + G2 con G1 bipartito y G2 completo. Es decir, si G es grafo junta
+
+En un grafo junta tengo que G = G1 + G2 = {V1 U V2, E1 U E2 U (V1xV2)}
+Quiero saber si G cumple que es un grafo junta. Por lo tanto, en G debe existi G1 y G2 a su vez
+Para esto, yo se que entre cada vertice existe una arista por lo menos, esto esta por V1 x V2, es decir, cada vertice tiene una arista entre otra
+Puedo checkear esto en O(m)
+Por otro lado, necesito saber que hay un grafo que es completo. Eso significa que hay algun grafo cuyos todos vertices estan conectados entre si
+Luego otro grafo que es bipartito. Para saber si es bipartito facilmente puedo tomar 4 vertices y buscar caminos que sean de longitud par y cuyas aristas tengan conexiones entre si
+De esta forma puedo decir que son bipartitos por propiedad
+Para ver G2, entonces todos los vertices de G2 estan unidos por una arista con todos los vertices de G2
+Entonces los nodos estan conectados a todos los otros de G. Tienen grado de n-1
+
+Como me piden complejidad O(n + m) entonces puedo asumir que mi grafo está representado por una lista de adyacencias
+En O(n+m) puedo encontrar a todos los nodos de G que tienen grado n-1. Elijo los que encuentro para formar parte de G2. Esto me garantiza que:
+	1) Sea completo
+	2) G tiene a todas las aristas que pueden ir de G1 a G2
+	
+Ahora, para el grafo inducido de G que queda, debo sacar los nodos de G1 que es bipartito
+Por la practica, tenemos un algoritmo que analiza si el grafo es bipartito usando BFS o DFS. Para esto se obtiene un arbol enraizado y luego se busca que no haya
+ninguna arista en el grafo que una dos nodos cuya profundidad en el arbol tenga la misma paridad
+
+Si el grafo no es conexo hay que repetir para cada componente conexa. Si todas pueden ser bipartitas por separado, su union es tambien bipartita
+
+Algoritmo:
+1) Armo lista de Adyacencia
+2) Busco todos los vertices que tengan grado n-1 => O(n+m)
+3) Obtengo un candidato a G1, saco todos los vertices y aristas de G2
+4) Busco un grafo bipartito con lo mencionado. Uso BFS porque me gustan sus siglas => O(n+m)
+
+Este algoritmo propuesto propone primero un G2 y luego se fija si lo que queda funciona como G1, es decir, si es bipartito
+Puedo estar dejando opciones? No puedo evitar buscar los nodos cuyo grado sea n-1 porque si no no estoy cumplendo con G2
+Se que buscar al revez no me conviene ya que si un grafo H es bipartito, entonces H - v tambien lo es. O sea, no ayuda a que G1 cumpla la condicion agregar nodos
+Entonces no dejo afuera posibilidades la definir G2 de esta forma
+
+Por otro lado, tengo ciertos casos bases que tengo que validar
+Si n < 3 entonces falso, pues |V(G1)| >= 2 por bipartito y |V(G2)| >= 1
+Si ningun nodo tiene grado n - 1 falso, pues no cumple que sea completo
+Si todos los nodos tienen grado n-1 devuelvo verdadero pues puedo componer G2 con todos esos nodos menos dos y por lo tanto, esos dos vertices restantes, forman un grafo bipartito
+
+===================================================================================================================================================================================================
+Ejercicios de Programación Dinámica
+
+Ejercicio 5
+Laberinto rectangular
+Una casilla negra, las demas blancas. En una casilla hay una ficha negra
+Casillas pueden estar separadas por vallas de alguna vecina horizontal o vertical
+El objetivo es mover la ficha negra desde su casilla inicial hasta la casilla negra en la menor cantidad posible de movimientos
+Desplazar siempre en cuando no haya vallas
+
+Se busca: Minima cantidad de movimientos para que la ficha negra ocupe la casilla negra. Si no es posible inficarlo
+Mostrar quue el algoritmo propuesto es correcto y determinar su complejidad espacial y temporal. Mejor complejidad hoy: O(c) donde c es la cantidad de casillas
+
+
+Este problema se puede resolver con una representación de grafos. Tomo las casillas como los vertices y las aristas como los accesos o movimientos a otras casillas siempre
+y cuando no hayan vallas
+Sea c la cantidad de casillas entonces tengo c nodos
+Estas casillas estan en orden, de una casilla puedo ir a lo sumo a 4 vertices mas o puedo no ir a ninguno si tengo el vertice encerrado
+
+La posicion en la matriz se representa como k, l del casillero negro, donde k y l estan acotados por las filas y columnas
+Luego la posicion de la ficha es inicialmente i, j pues puede empezar en cualquier sector
+Luego, en posicion i, j pueden haber a lo sumo 4 paredes, si hay 4 paredes significa que estoy atrapado, si hay menos de 4 paredes tengo algun camino posible
+Por otro lado, tambien puuedo tener 1 vertice aledaño y que la casilla actual como la casilla de al lado tienen la misma cantidad de pareces, es decir 3
+Si tengo 3 casilleros a lo sumo tengo 2 casillas con 3 pareces y una con 2
+Si tengo 4 entonces tengo todas con 2 casillas. O 2 con 3 y las otras con 2 pareces
+Entonces, teniendo en cuenta esto, debo saber tambien la cantidad de paredes
+
+Casos base:
+	-> i = k y j = l devuelvo 0, pues estoy en la casilla y no tengo mas movimientos que hacer
+	-> i != k y j != l y paredes = 4 devuelvo 0: No puedo salir, a su vez termino el programa
+
+Caso Recursivo:
+	-> i != k y j != l entonces me fijo si puedo moverme. Continuo hasta quedarme encerrado, si no vuelvo
+	-> En cada paso busco el minimo
+	
+Luego tengo
+	
+	f(i, j) =
+		=> 0 si i = k y j = l
+		=> 0 si paredes[i][j] = 4
+		=> 1 si paredes[i][j] <= 4
+		=> 
+		
+Este enunciado cumple con la propiedad de superposicion de problemas puesto que. Para cada casillero tengo a lo sumo 4 posibles movimientos. Entonces tengo 4^c posibles casos recursivos
+Por otro lado tengo que c es la cantidad de casillas entonces a lo sumo 0 <= i, j <= c
+Luego como tanto i como j se mueven en C. Siendo j si voy arriba o abajo, tengo c-i casilleros, esto es O(c). Luego finalmente tengo O(c) y puedo usar programación dinamica
+
+Como estructura de memoizacion puedo utilizar una matriz, donde tengo i que es movimiento horizontal y j movimiento vertical
+Se que tengo c casilleros y a lo sumo 4*c aristas. Entonces tomandolo como un grafo, o en la misma matriz, puedo considerar usar BFS
+Esto se hace en complejidad O(c + 4c) = O(5c) = O(c)
+
+
+===================================================================================================================================================================================================
+Ejercicio 1
+M es una matriz de n filas y m columnas
+Camino que inicia en (1,1) y termina en (m, n) tal que minimice la suma de los valores por los que pasa
+Puedo ir abajo o a derecha. Complejidad O(m*n)
+
+Caso base:
+	-> Llegue a m, n. Entonces devuelvo la suma(G) + M[m, n] (G mi suma acumulada)
+	-> No llegue a m, n. Entonces:
+		Reviso en cada casilla. El minimo hasta M[m][n] alcanzable desde ahi. Luego uno los valores
+		Casos borde: 
+			Si llegue a M[m][j] entonces solo puedo moverme por todo n
+			Si llegue a M[i][n] entonces solo puedo moverme por todo m
+	
+	f(i, j)
+		=> M[m][n] si i = m y j = n
+		=> f(m, j+1) si i = m
+		=> f(i+1, n) si j = n
+		=> f(i, j) + min(f(i+1, j), f(i, j+1)) para todo i entre 1 y m y j entre 1 y n
+		
+	Superposicion de problemas?
+	Por cada casillero tengo 2 posibilidades, o voy a derecha, o voy abajo. Esto hasta los bordes donde solo puedo ir hacia algun lado, pero es un caso
+	Entonces, como tengo 2 posibilidades, tengo m filas y n columnas. Luego la cantidad de llamados recursivos que debo hacer es 2^n*m
+	
+	Por otro lado, tengo dos indices, i y j. Se que i se mueve entre 1 y m, y j entre 1 y n. Luego, para todos los casos recursivos yo he de tener
+	(n-i)*(m-j). Luego cuando el caso es i = j = 1 tengo n*m instancias a resolver
+	Cumple la superposicion de problemas
+	
+	Como cumple, puedo usar programación dinamica para resolver este problema
+	Como estructura de memoizacion escojo utilizar una matriz pues i y j se mueven entre 1 y m y n. No obstante, para cada i posible puedo tener varias combinaciones de j que me hagan minima
+	la solucion, entonces yo debo de quedarme con la mejor. 
+	
+	Algoritmo
+	G <- matriz de n * m de tamaño con todo en bottom
+	f(i, j)
+		si i = m y j = n retorno M[m][n]
+		si i = m y j < n retorno f(m, j+1)
+		si i < m y j = n retorno f(i+1, n)
+		si M[i][j] es bottom
+			M[i][j] <- M[i][j] + min(f(i+1, j), f(i, j+1))
+		retorno M[i][j]
+		
+	Cumple: Si papu
+===================================================================================================================================================================================================
+Sea v un vector de numeros naturales. W un numero naturalesElementos suma, producto y potencia tal que el resultado sea w
+El mejor algoritmo es n*w
+
+Empiezo en i = 0. Entonces para i = 1 tengo dos alternativas
+Sumo			 V[0] +  V[1]
+Multiplico		 V[0] x  V[1]
+Potencio		 V[0] ** V[1]
+
+Si V[1] es 1, y Si V[0] + V[1] supera W puedo ir por las otras dos, pues 1 es elemento neutro
+Si V[1] no es 1:
+	Si V[0] + V[1] supera a W no hay forma de obtener
+	Si V[0] * V[1] supera a W solo puedo ir por suma
+	Si V[0] ** V[1] supera a W solo puedo ir por suma y producto
+
+Necesito una secuencia de operaciones. Por lo tanto, en cada caso voy a estar agregando la operación elegida a mi elemento
+No puedo asuumir el minimizar algo pues si resto todo bien pero si divido o calculo la raiz, es decir, el inverso de la operacion, nada me asegura que el resultado pertenezca a N
+Entonces tengo mi alternativa, inicio con un valor igual a V[0]. Y luego sigo, hago las operaciones, y veo que las correspondientes no superen a W
+Aquellas que superen, no las tomo en cuenta, porque no me interesan
+Puedo contar con un valor constante que sea 1, 2 o 3
+Luego si el valor es inferior a W entonces retorno el resultado
+
+Si i = |V| y los operandos no hicieron llegar a la permutacion de valores a W, entonces retorno 0. Donde se que 0 es bueno, nada
+Si el valor es W entonces listo, retorno el operando
+Como tengo 0, entonces no me quedara nada que volver atras y probar otras alternativas
+Entonces hago esto. De manera recursiva utilizo una matriz donde guarde estos valroes de las operaciones
+Finalmente denuevo el resultado de la matriz M[i][j]
+Siendo j el valor de la suma, producto o potencia hasta el momento
+
+===================================================================================================================================================================================================
+Ejercicio 13
+Acciones en secuencia de n dias
+El precio en el k-esimo dia es p(k) = f(k) pra k entre 1 y n y f(k) es O(1)
+Quiero la maxima disminución
+
+Necesito la maxima disminucion entre dos fechas. Entre i y j tales que p(i) - p(j)
+Se que i y j pueden tomar el mismo valor, no obstante, i <= j. I no puede superar a J
+Por lo tanto, por cada i posible, tengo desde 0 a j valores. Esto me genera complejidad O(n^2)
+Necesito mejorar esto
+
+La maxima disminucion consta de tomar el maximo valor y ver cuanto disminui en un intervalo, y tomando la maxima posible
+Entonces, sea W el maximo
+f(j)
+	=> W - V[J] si J = n
+	=> max{W - V[J], W - f(j+1) si J < n
+	
+El maximo lo obtengo en O(n) recorriendo una vez la secuencia. Luego para obtener la maxima disminucion recorro todo el arreglo
+y una vez recorrido, resto al maximo el valor, y guardo ese maximo en una variable. Voy haciendo esto hasta que encuentre la maxima disminución posible
+Esto se hace en O(n)
+
+Los valores, el maximo y la maxima disminución la guardo en O(1) en memoria
+===================================================================================================================================================================================================
+Ejercicio 18
+M es una matriz de m filas y n columnas. Dado i_1, i_2, j_1, j_2 enteros tales que 1 <= i_1 <= i_2 <_ m y 1 <= j_1 <= j_2 <= n
+Se define suma(M, i_1, i_2, j_1, j_2)
+===================================================================================================================================================================================================
+Ejercicio 17
+v = (v1, v2, ..., vn) un vector de numeros reales
+Cada par de enteros p y q tales que 1 <= p <= q <= n suma(v, p, q) = sum
+Dado v preprocesar adecuuadamente tal que pueda calcularse suma(v, p, q) en O(1)
+Lo que puedo hacer aca es pre procesar el vector llevando la suma hasta una en b[i]
+Es decir, en b[0] = v[0]. b[1] = v[1] + v[0]
+Luego para caluclar la suma(v, p, q) entonces hago v[q] - v[p] y es O(1)
+Listo
+===================================================================================================================================================================================================
+Algoritmos de Grafos
+Sea G=(V, R) un digrafo de n vertices y m ejes
+Lista de sucesores y Lista de predecesores. Similares a las listas de adyacencias, solo que en vez de tener un vertice de adyacencia tengo la arista entre mi vertice y el otro
+
+a) Dado G siendo lista de sucesores, representarlo con lista de predecesores, complejidad O(m+n)
+Como G es una lista de sucesores, me basta con invertir la relacion, es decir, para cada sucesor de G, lo trato como predecesor, pues si y es sucesor de x, entonces x es predecesor de y
+Por ende, armo una nueva lista G' donde tenga ahi como predecesor al sucesor de y para cada y. Esto se hace en tiempo O(m+n) pues solo es recorrer la lista e invertir el concepto
+
+b) Dado G con lista de sucesores, invertir los ejes y represetnar el resultado con lista de sucesores
+	Aplico la misma idea que antes, invertir los ejes hace representación a decir que ahora el sucesor es predecesor, entonces, simplemente hago lo mismo que antes. Complejidad O(n+m)
+	
+c) Dado G con lista de sucesores invertir todo y representar el resultado con lista de predecesores. Basicamente mantengo la misma lista y listo, ya que si ahora es una lista de sucesores,
+invirtiendolo el sucesor se hace predecesor, pero como quiero en sucesor, entonces lo tengo. Solo invierto la orientacion del eje
+
+a y b los hago con una nueva lista, donde ahi mantengo la representacion, esto es el G' que se mencionó en a
+===================================================================================================================================================================================================
+Ejercicio de parcial
+Un grafo simple se dice 1-arbol si es un arbol con un solo eje agregado
+Sea G un 1-arbol de n vertices con pesos asociados a sus ejes. Diseñar un algoritmo en O(n) que determine el peso de un arbol generador minimo de G
+Por otro lado, como G es 1-arbol => G tiene n - 1 + 1 aristas
+Eso significa que G tiene un ciclo en el cual, si se saca una arista, entonces tengo un arbol. Luego debo ver que arista deberia sacar para convertir mi grafo en un arbol
+
+Para la idea del algoritmo
+Puedo recorrer el grafo de forma tal que debo encontrar cuando empieza el ciclo. Una vez tengo identificado el ciclo, recorro el mismo hasta encontrar la arista de mayor peso, luego la quito
+Se entonces que quitando esta arista, rompiendo ese ciclo, tengo un arbol generador que a su vez es minimo, pues saque la arista mas pesada (Esto por lo visto en la teorica y la practica)
+Luego, recorro el arbol que me quedo y sumo los pesos de las aristas
+
+Otra idea es recorrer el grafo con BFS y marcar las aristas pertenecientes al ciclo, de forma tal que una vez marcadas, pueda ver entre ellas la de maxima longitud
+
+function
+	enArbol <- [0...0]
+	numerar las aristas de 1 a n
+	aristas <- [e...en]
+	arbol <- BFS(G) // Me da la lista de aristas del arbol que se forma
+	e <- 0
+
+	para e in arbol
+		enArbol[e] <- 1
+	fin para
+
+	para i desde 1 a n
+		si enArbol[i] != 0
+			e <- aristas[i]
+		fin si
+	fin para
+	// Hasta aca lo que hago es recorrer todo el arbol y marcar la arista que no está en el mismo
+
+	camino <- caminoEntre(arbol, u, v) // donde e = (u, v)
+	e_max <- maxPeso(camino)
+	res <- sumaPeso(arbol)
+	si l(e_max) > l(e)
+		res <- res - l(e_max) + l(e)
+	fin si
+
+	devolver res
+fin
+===================================================================================================================================================================================================
+Sea v = (v1, v2, ..., vn) un vector de numeros enteros
+Algoritmo: Indicar la minima cantidad de numeros que hay que eliminar para que cada numero que permanezca sea múltiplo del anterior
+
+Como forma directa yo tengo que recorrer toda la secuencia y ver cuales numeros son multiplos de otros
+0 es multiplo de todos y a la vez de ninguno. Considero que el 0 vuela
+Para todos los demas numeros, se que todos tienen que ser multiplo del anterior
+Esto me condiciona a que todos los valores sean por lo menos, multiplos del primer elemento pues si en la secuencia tengo
+v = (5, 10, 15, 2, 7, 20) entonces los numeros que tienen que estar obligatoriamente son divisibles por el primer elemento, por el segundo, y así consecutivamente, en especial divisibles por su anterior
+Aca, 10 es multiplo de 5. 15 es multiplo de 5 pero no de 10. Luego 15 no es multiplo de 10, 2 y 7 tampoco. Finalmente me queda 20 que es multiplo de 10
+Luego, los valores a eliminar son 15, 2, 7 que son 3. Entonces listo
+De todas maneras, si un numero es multiplo de otro, especialmente lo es desde el primer elemento, es decir. 20 es multiplo de 10, y especialmente de 5
+Si el vector fuera v = (5, -5, 10, 20, 40, 80) entonces no hay ningun numero que deba de borrar porque todos los numeros son multiplos de todos, especialmente, el anterior
+Entonces, tengo lo siguiente:
+Luego, esto es el equivalente a calcular la cantidad de multiplos previos. Si es multiplo del anterior, sumo 1, si no, sumo 0
+Entonces:
+
+f(i, w)
+	=> 0 si i = 0
+	=> si |v| es 1 entonces 0
+	=> si |v| es 2. Si v[1] es multiplo de v[0] entonces 0, si no 1
+	=> si |v| es > 2
+	=> 1 + f(i+1, w) si w mod v[i] != 0
+	=> f(i+1, v[i]) si w mod v[i] = 0
+	
+===================================================================================================================================================================================================
+Ejercicio donde brian quiere gastar menos plata
+Modelado con grafos y elegido ser representado con una matriz de adyacencias ya que
+1: La complejidad tiene que ser mejor que O(n^3) por lo tanto, la matriz es O(n^2) y por ende caigo dentro
+2: Como es un grafo dirigido entonces yo tengo mayor facibilidad para ir de una arista a otra solo mirando los elementos en relacion al indice. De esa forma, se que cual es la dirección de la arista
+
+Ahora busco el vertice mas adecuado para el cual pueda disminuir la cantidad de peaje que Brian tiene que gastar
+Para esto, tengo que recorrer todos los vertices. Por cada vertice debo conseguir la menor cantidad de peaje desde una ciudad a otra
+Tengo que tener entonces, 
