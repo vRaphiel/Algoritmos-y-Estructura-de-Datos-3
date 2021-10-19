@@ -1,0 +1,41 @@
+Sea n un numero entero. Considerar todas las permutaciones de 1 hasta n en orden lexicografico y concatenarlos todos en una secuencia p
+Por ejemplo:
+n = 3 => p = [1,2,3,1,3,2,2,1,3,2,3,1,3,1,2,3,2,1]
+La longitud de esta secuencia deberia ser n*n!
+
+p es mi secuencia de permutaciones de todos los numeros lexicograficos. Podemos decir que p es la secuencia de partes del conjunto desde 1 hasta n
+Entonces, se que el tamaño del conjunto de partes es 2^n
+Luego, tengo que unificar estas subsecuencias en una sola
+Luego asi tengo n*n! de tamaño
+
+Una vez tengo mi conjunto de partes unificado con todos sus elementos
+Sea 1 <= i <= j <= n*n! el par de indices, llamamos la secuencia p' = (pi, pi+1, ..., pj-1, pj) un subarreglo de p
+La longitud se define como el numero de sus elementos, por ejemplo j-i+1
+Su suma es la suma de todos sus elementos sum_k=i^j pk
+
+Encontrar el numero de subarreglos de p de tamaño n teniendo la suma n(n+1)/2
+Mostrar el resultado con modulo 998244353
+
+
+En conclusion a lo que me piden:
+Encuentro la secuencia de todas las permutaciones de n. Esa secuencia se llama p
+Ahora, para esa secuencia, armo las subsecuencias de p de tamaño n como subsecuencias de estos elementos
+La subsecuencia se arma con elementos pi y pj siendo i <= j
+Entonces tengo que mantener la validez de i - j + 1 = n. Por ende, se que entre i y j tiene que haber exactamente n valores de diferencia
+Para el caso n = 3
+Entonces tengo que i = 1 y j = 3 es valido, pues j - i = 3 - 1 = 2 + 1 = 3 (pues siempre se le suma 1)
+Teniendo esto voy moviendo mi j con una diferencia de n - 1
+Luego. Una vez tenga mis arreglos, recorro todos estos y hago la suma de cada uno, internamente me guardo estos resultados
+Finalmente calculo n*(n+1) / 2 y reviso cuantos posibles valores tengo para este
+
+
+Por otro lado:
+Hay dos tipos de subarreglos con longitud n
+-> Estan todos formados a partir de una permutacion
+-> Todos son una concatenacion de una subsecuencia de longitud k sufijo de una permutacion, y una subsecuencia n - k de longitud prefija en la siguiente permutacion
+
+Hay n! subarreglos en el primer tipo, y todos tieien la suma correcta
+El segundo caso:
+    Rellamemos el algoritmo para hallar la siguiente permutacion en orden lexicografico
+    Hallamos el sufijo mas lango que esta en orden decreciente cuya longitud es k
+    Cambiamos el elemento predecesor x con el mas pequeño 

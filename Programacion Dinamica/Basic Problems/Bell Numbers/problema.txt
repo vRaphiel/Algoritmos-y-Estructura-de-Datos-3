@@ -1,0 +1,44 @@
+Problema:
+Dada una secuencia de n elementos, encontrar la cantidad posible de particiones
+Input:  n = 2
+Output: Number of ways = 2
+Explanation: Let the set be {1, 2}
+            { {1}, {2} } 
+            { {1, 2} }
+
+Input:  n = 3
+Output: Number of ways = 5
+Explanation: Let the set be {1, 2, 3}
+             { {1}, {2}, {3} }
+             { {1}, {2, 3} }
+             { {2}, {1, 3} }
+             { {3}, {1, 2} }
+             { {1, 2, 3} }
+
+Para cada numero tengo que armar todas las particioens del numero, de los numeros predecesores. Es decir, el conjunto de partes
+Entonces, sea n un numero, pienso en aplicar un conjunto de conjuntos, donde dentro de cada conjunto hay mas subconjuntos que contienen a todos los valores
+Es decir, para n = 2. tengo el conjunto C = { {{1}, {2}}, {{1, 2}} }
+Por lo tanto, es la cantidad de conjuntos de particiones en las cuales puedo contener a todas las mezclas. 1 conjunto donde tengo al 1 y al 2 separados, y otro conjunto
+donde está el 1 y el 2 en un conjunto solo
+
+Puedo pensarlo, por cada subconjunto del conjunto original, n siempre tiene que estar, luego n-1, luego n-2
+Y por otro lado, debo tener la cantidad de subconjuntos armados, o por lo menos la cantidad de subconjuntos que estoy por empezar
+
+Sea S(n, k) el numero total de parciciones de n elementos en k conjuntos. El valor del n-esimo numero de Bell es la suma de S(n, k) para k = 1 hasta n
+Para n = 1 tengo 1 sola particion, para n = 2 tengo 2 particiones, para n = 3 tengo 5 particiones
+Entonces, puedo por cada caso ir concatenando.
+Para n = 1 hay una sola particion, y como para n = 2 tengo 2 particiones, puedo combinarlas, agregando el n-esimo numero
+Para n = 3 tengo 5 particiones
+
+Entonces, se puede definir la funcion recursiva como
+S(n, k)
+    1 si k = 1
+    k*S(n-1, k) + S(n-1, k-1) c. c
+
+Cumple la propiedad de memoizacion?
+Es equivalente a calcular la cantidad de partes de un conjunto, salvo que este es un numero, en tal caso, tengo aproximadamente 2^n numeros
+Por otro lado, n y k disminuyen constantemente hasta llegar a 0. En tal caso, tengo n*k iteraciones
+Luego la complejidad es O(n*k)
+Vale la pena memoizar
+
+Algoritmo:

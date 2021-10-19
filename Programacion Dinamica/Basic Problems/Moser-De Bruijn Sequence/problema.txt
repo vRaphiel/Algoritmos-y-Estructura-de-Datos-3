@@ -1,0 +1,26 @@
+Problema:
+Dado un entero n, mostrar los primeros n terminos de la secuencia de Moser-de Bruijin
+Esta es una secuencia obtenida de agregar constatemente las potencias de 4
+
+0, 1, 4, 5, 16, 17, 20, 21, 64, 65, 68, 69, 80, 81, 84, 85, 256, ...
+
+Tenemos la relacion de que siempre hay un numero potencia de 4, o multiplo de 4, y luego le sigue el sucesor, que es ese numero + 1
+Entonces la secuencia se basa en 
+Sea S(n) el n-esimo numero de la secuencia de Moser-de Bruijin
+Puedo definir los problemas como:
+S(n)
+S(n) + 1
+
+Con S(0) = 0 y S(1) = 1
+Al menos para S(2), S(3), S(4), S(5) estan los numeros dados porque es 4^1 y 4^2 (+1 respectivamente)
+Pero para el resto, no todos los numeros son potencia propia de 4, el 20 por ej. es S(7) no obstante no es potencia de 4 pero si es resultado de alguna combinacion de 
+algunos valores de 4
+
+Entonces, puedo definir mi funcion recursiva como
+S(n) = 
+    0 si n = 0
+    1 si n = 1
+    4*S(n/2) si n % 2 == 0
+    4*S(n/2) + 1 si n % 2 == 1
+
+Esto es por si el numero es par o impar. Y luego los casos base

@@ -1,0 +1,61 @@
+Problem:
+Tenemos un arreglo de longitud n
+Tenemos que elegir alguna subsecuencia de este arreglo la cual tenga el maximo tamañoñ posible con la condicion
+de que esta subsecuencia tenga los numeros ordenados de manera creciente y sean consecutivos
+
+La subsecuencia de un arreglo puede ser obtenida eliminado algunos elementos del arreglo (Tambien pueden ser 0 elementos)
+Puedes borrar cualquier elemento, no necesariamente consecutivos
+Los elementos restantes deben preservar su orden
+
+Input: 
+La primera linea del input contiene un numero entero n (1 <= n <= 2*10^5) que es la longitud del arreglo
+La segunda linea contiene el input de los n numeros: a1, a2, a3, a4, ..., an (1 <= ai <= 10^9) del arreglo en si
+
+Output:
+En la primera linea imprimir k (siendo la lontigud maxima de la secuencia del arreglo dado que forma una secuencia de numeros crecientes)
+En la segunda linea imprimir la secuencia
+
+Entonces, para hacer esta operacion, tenemos que hacer lo siguiente:
+Sabemos que la secuencia es de numeros no necesariamente ordenados 
+Entonces, nosotros tenemos que buscar la subsecuencia mas grande posible de numeros en incremento, no necesariamente consecutivos
+Para este problema tomamos lo siguiente:
+Este arreglo, sea p, tiene longitud |p|, entonces la subsecuencia tiene tamaño a lo sumo |p|. Por otro lado, la subsecuencia que se esta buscando
+tiene está contenida en a lo sumo 2^|p| secuencias, que son las partes de p
+Pero esto es mucho tamaño. Nosotros siempre buscamos el maximo
+
+Se que la secuencia mas larga está compuesta por un prefijo y un sufijo de secuencias en donde, en el prefijo y sufijo todos los elementos son 
+de orden creciente
+Luego, el ultimo elemento de la subsecuencia prefijo tiene que ser menor que el primer elemento del sufijo, solo de esta forma puedo concatenar
+los elementos y tener un resultado final y eficaz
+
+Planteo mi funcion como la siguiente:
+
+Sea DP[i] la longitud de la subsecuencia mas larga que termine con A[i] para todo A[i]
+Si A[i] - 1 esta presente en el arreglo antes del i-esimo elemento, entonces A[i] va a añadir a la secuencia de incremento el elemento A[i] - 1
+Entonces DP[i] = DP[index(A[i] - 1)] + 1
+Si A[i] - 1 no esta presente en el arreglo antes del i-esimo elemento, entonces DP[i] = 1 dado que los elementos de A[i] incian con A[i]
+Aqui la relacion es:
+Si A[i] - 1 está antes del i-esimo elemento
+    DP[i] = DP[index(A[i]-1)] + 1
+Si no
+    DP[i] = 1
+
+Con esto, sabemos entonces longitud de la subsecuencia mas larga
+Si queremos la subsecuencia mas larga especificamente, entonces podemos en vez de guardar la longitud, guardamos un subarreglo
+Validando la condicion, guardamos un elemento
+Este elemento se agregará a la secuencia de elementos crecientes
+Y finalmente devolvemos el resultado
+
+Propiedad de superposicion de problemas
+Si tenemos que checkear esto linealmente, por cada posicion, por cada indice, tenemos a lo sumo n - k + 1 elementos para checkear
+Es como checkear las partes del arreglo inicial, buscar la que cumpla nuestras condiciones y quedarnos con la de mayor longitud
+Esto consume tiempo 2^n y espacio 2^n basicamente
+Por otro lado, nosotros sabemos quue el elemento i va incrementando de uno en uno hasta n, en cada iteracion guardamos el resultado
+Eso significa que tenemos a lo sumo n iteraciones
+Por otro lado, vale la pena memoizar
+
+Para memoizar usamos un arreglo de memoizacion, donde en cada posicion i vamos guardando el valor correspondiente al arreglo
+O por lo menos a lo restante
+Como en cada iteracion estaremos haciendo un arreglo mas grande, tendremos al final del dia a lo sumo O(n^2) de almacenamiento
+
+It Works

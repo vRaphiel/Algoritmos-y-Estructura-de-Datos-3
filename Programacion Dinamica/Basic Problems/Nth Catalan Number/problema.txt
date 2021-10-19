@@ -1,0 +1,56 @@
+Problema:
+Los numeros catalan son una secuencia de numeros naturales que aparecen en varios problemas de conteo:
+    -> Cuente el numero de expresiones que contienen n pares de parentecis que coinciden correctamente
+        Para n = 3 las posibles expresiones son ((())), () (()), () () (), (()) (), (() ())
+    -> Cuente el numero de posibles arboles de busqueda binaria con n nodos
+    -> Cuente el numero de arboles binarios completos con n+1 hojas
+    -> Dado un numero n, devuelve el numero de formas que puedes dibujar n acordes en un circulo con 2xn puntos de modo que no se crucen 2 acordes
+
+Los primeros pocos numeros catalanes para n = 0, 1, 2, 3 ... are 1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862 ...
+El n-esimo numero catalan se obtiene como
+Cn = 1/(n+1) * (2n n)
+El numero combinatorio es Cnm = (m n). Si m = 2n entonces tengo C 2n n = (2n n)
+
+n = 0
+C0 = 1
+
+n = 1
+C1 = 1/2 * 2 = 1
+
+n = 2
+C2 = 1/3 * 6 = 2
+
+Luego, puedo definir la siguiente funcion recursiva
+
+f(n) = 
+    1 si n = 0
+    1/(n+1) * (2n n) C.C
+
+Sea g(n) = (2n n), entonces
+f(n) = 
+    1 si n = 0
+    1 / (n+1) * f(n-1) C.C.
+
+Para g(n) utilizo la aplicacion de funcion recursiva del numero combinatorio visto en la practica
+Propiedad de superposicion de problemas:
+    Tenemos el n-esimo numero catalan, entonces para cada iteracion, si no usamos numero combinatorio, debemos aplicar la del numero
+    natural combinatorio. La complejidad de hacer 1 / n+1 es O(1) pero el calculo del numero combinatorio es (n k)
+    Entonces la complejidad es O((n k))
+    Por otro lado, como n siempre decrementa hasta 0, tenemos n iteraciones
+    Luego la complejidad se reduce en O(n)
+    Conviene memoizar
+
+Como tengo n valores, entonces puedo crear una matriz de O(n) de espacio, y para g(n) utilizo una matriz de memoizacion. complejidad espacial O(n^2)
+Considero g(n) ya está
+
+Idea:
+    PD(n, i)
+        m <- matriz de n tamaño todo NULL
+        si n <= 1
+            devolver 1
+
+        si m[n] = null 
+            m[n] <- PD(i, i+1)*PD(n-i-1, i+1)
+
+        devolver m[n]
+        
