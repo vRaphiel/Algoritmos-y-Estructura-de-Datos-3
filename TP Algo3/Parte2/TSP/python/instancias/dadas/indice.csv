@@ -1,0 +1,5 @@
+dataset,instancia,N,m,archivo
+dadas,berlin52,52,1326,instancias/dadas/berlin52.txt
+dadas,ulysses16,16,120,instancias/dadas/ulysses16.txt
+dadas,st70,70,2415,instancias/dadas/st70.txt
+dadas,kroE100,100,4950,instancias/dadas/kroE100.txt

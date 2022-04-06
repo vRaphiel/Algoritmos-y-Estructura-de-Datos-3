@@ -1,0 +1,6 @@
+dataset,instancia,N,m,archivo
+random,random1,10,45,instancias/random/random1.txt
+random,random2,20,190,instancias/random/random2.txt
+random,random3,30,435,instancias/random/random3.txt
+random,random4,40,780,instancias/random/random4.txt
+random,random5,50,1225,instancias/random/random5.txt

@@ -1,0 +1,130 @@
+---
+title: "Tp algo 3 "
+output: html_notebook
+---
+library(dplyr)
+library(readr)
+library()
+
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyverse)
+datos2=read_csv("resultadoTabu.csv")
+datos1=datos2[,-9]
+
+df1= dataset52graf0 %>% unnest(soluciones) %>%                                                                      group_by(subvecindad) %>% mutate(x=row_number(),dataset=factor(subvecindad)) %>% ungroup
+df1$soluciones  =df1$soluciones-7542                                                                                                                                         
+df= dataset52graf0 %>% unnest(soluciones) %>% group_by(subvecindad) %>% mutate(x=row_number(),dataset=factor(subvecindad)) %>% ungroup          
+df$soluciones=df$soluciones-7542
+
+grafico=df %>%  ggplot(aes(x,soluciones)) + geom_line(aes(color=dataset)) + labs(title = "Tipo de memoria :swap , tamaño de memoria = 10")
+grafico
+ggsave("graficoswap.png")
+
+
+
+                                                                      
+```
+\
+
+
+# memoria con iteraciones 
+```{r}
+
+
+
+datasetMemoIt=datos %>% filter(N==52,tipoMem==1,subvecindad==20,cantIt==500)
+
+datasetMemoIt$soluciones=strsplit(datasetMemoIt$soluciones,split=" ")
+
+datasetMemoIt$soluciones=lapply(datasetMemoIt$soluciones,FUN = as.numeric)
+
+
+datasetMemoIt=datasetMemoIt %>% 
+  unnest(soluciones) %>% 
+   group_by(tamMem) %>%mutate(x=row_number(),tamMem=factor(tamMem)) %>% ungroup          
+
+datasetMemoIt$soluciones=datasetMemoIt$soluciones-7542
+
+
+grafico=datasetMemoIt %>%  ggplot(aes(x,soluciones)) + geom_line(aes(color=tamMem)) + labs(title = "Memoria por cswaps; vecindad=20%")
+grafico
+ggsave("grafico, memoria swaps vecindad20.png")
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+```{r}
+datos= read_csv("resultadoNoTabu.csv")
+
+dataset1=datos %>% filter(metodo=="AGM" | metodo =="BG",dataset=="dadas")
+dataset1[dataset1$N==52]==dataset1$costoMin[dataset1$N==52]-7542
+
+dataset1$N==52
+dataset1$costoMin[dataset1$N==100]=dataset1$costoMin[dataset1$N==100] - 22068
+
+
+grafico= dataset1 %>% ggplot(aes(N,costoMin))+ geom_point(aes(color=metodo)) + labs(title="Comparacion Golosa vs AGM en  diferentes Instancias dadas")
+grafico
+ggsave("AGMvsGolosa.png")
+
+
+
+```
+
+
+
+```{r}
+# tiempos en random 
+datos1=read_csv("resultadoTabuNuestros.csv")
+datos1=datos1[,-9]
+datos1= datos1 %>% filter(dataset=="random",tamMem==30)
+
+dataset2=datos %>% filter(dataset=="random")
+datos1=datos1 %>% mutate(metodo=paste("TABU",tipoMem,sep=":"))
+
+datos1= datos1 %>% select(dataset,N,m,metodo,costoMin,tiempo)
+
+
+df=rbind(dataset2,datos1)
+
+
+
+grafico1= df %>% ggplot(aes(N,tiempo,color=metodo)) + geom_point() + geom_line() +labs(title="Comparacion de tiempo para cada metodo")
+grafico1
+
+ggsave("Tiempos.png")
+
+```
+
+```{r}
+dataset2=dataset2 %>% filter(metodo=="BL")
+
+df=rbind(dataset2,datos1)
+
+
+grafico2= df %>%  ggplot(aes(tiempo,costoMin,color=metodo)) + geom_point(aes(size=N))
+grafico2
+ggsave("CalidadvsTiempo.png")
+
+
+
+```
+

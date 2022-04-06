@@ -1,0 +1,6 @@
+dataset,instancia,N,m,archivo
+randomVariacionAlta,randomVariacionAlta1,10,45,instancias/randomVariacionAlta/randomVariacionAlta1.txt
+randomVariacionAlta,randomVariacionAlta2,20,190,instancias/randomVariacionAlta/randomVariacionAlta2.txt
+randomVariacionAlta,randomVariacionAlta3,30,435,instancias/randomVariacionAlta/randomVariacionAlta3.txt
+randomVariacionAlta,randomVariacionAlta4,40,780,instancias/randomVariacionAlta/randomVariacionAlta4.txt
+randomVariacionAlta,randomVariacionAlta5,50,1225,instancias/randomVariacionAlta/randomVariacionAlta5.txt
